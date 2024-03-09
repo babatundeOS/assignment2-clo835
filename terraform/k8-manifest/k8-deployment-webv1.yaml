@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k8-webappv1-deployment
+  namespace: webapp
+  labels:
+    name: employee
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      version: "1"
+      name: employee
+  template:
+    metadata:
+      labels:
+        name: employee
+        version: "1"
+    spec:
+      containers:
+        - name: webapp
+          image: 558852840836.dkr.ecr.us-east-1.amazonaws.com/ecr_assignment1_repo:webapp-061612
+          env:
+            - name: DBPWD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-root-password
+                  key: MYSQL_ROOT_PASSWORD
+            - name: DBPORT
+              value: "3306"
+            - name: DBHOST
+              value: "10.244.0.6"
+            - name: DBUSER
+              value: "root"
+          ports:
+            - containerPort: 8080
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+

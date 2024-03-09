@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: k8mysql-replicaset
+  labels:
+    app: mysql
+    app.kubernetes.io/name: mysql
+    app.kubernetes.io/component: backend
+spec:
+  replicas: 3  # Set the number of replicas as needed
+  selector:
+    matchLabels:
+      app: mysql
+      app.kubernetes.io/name: mysql
+      app.kubernetes.io/component: backend
+  template:
+    metadata:
+      labels:
+        app: mysql
+        app.kubernetes.io/name: mysql
+        app.kubernetes.io/component: backend
+    spec:
+      containers:
+        - name: mysql
+          image: 558852840836.dkr.ecr.us-east-1.amazonaws.com/ecr_assignment1_repo:mysql-db-061549
+          imagePullPolicy: Always
+          env:
+            - name: MYSQL_HOST
+              value: mysql
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-root-password
+                  key: MYSQL_ROOT_PASSWORD
+            - name: MYSQL_PORT
+              value: "3306"
+            - name: MYSQL_DATABASE
+              value: employees
+          resources:
+            requests:
+              cpu: 100m
+              memory: 100Mi
+          ports:
+            - containerPort: 3306
+
